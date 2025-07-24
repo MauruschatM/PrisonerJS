@@ -2,8 +2,8 @@ import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/config/auth";
 import { headers } from "next/headers";
 import { runTournament } from "@/lib/tournament-engine";
-import { db } from "@/lib/db";
-import { tournament } from "@/lib/db/schema";
+import db from "@/lib/db";
+import { tournaments } from "@/lib/db/schema";
 import { eq } from "drizzle-orm";
 
 export async function POST(request: NextRequest) {
@@ -28,8 +28,8 @@ export async function POST(request: NextRequest) {
     // Check if tournament exists and is pending
     const tournamentData = await db
       .select()
-      .from(tournament)
-      .where(eq(tournament.id, tournamentId))
+      .from(tournaments)
+      .where(eq(tournaments.id, tournamentId))
       .limit(1);
 
     if (tournamentData.length === 0) {

@@ -1,10 +1,9 @@
-import { db } from "@/lib/db";
+import db from "@/lib/db";
 import {
-  tournament,
-  tournamentParticipant,
-  strategy,
-  user,
-  game,
+  tournaments,
+  tournamentParticipants,
+  strategies,
+  games,
 } from "@/lib/db/schema";
 import { eq, and } from "drizzle-orm";
 import { generateId } from "@/lib/utils";
@@ -182,19 +181,19 @@ export async function runTournament(tournamentId: string): Promise<void> {
 
     // Update tournament status
     await db
-      .update(tournament)
+      .update(tournaments)
       .set({
         status: "running",
         startedAt: new Date(),
         errorMessage: null,
       })
-      .where(eq(tournament.id, tournamentId));
+      .where(eq(tournaments.id, tournamentId));
 
     // Get tournament details
     const tournamentData = await db
       .select()
-      .from(tournament)
-      .where(eq(tournament.id, tournamentId))
+      .from(tournaments)
+      .where(eq(tournaments.id, tournamentId))
       .limit(1);
 
     if (tournamentData.length === 0) {
@@ -204,29 +203,29 @@ export async function runTournament(tournamentId: string): Promise<void> {
     const tournamentInfo = tournamentData[0];
 
     // Get all active strategies
-    const strategies = await db
+    const strategiesData = await db
       .select({
-        id: strategy.id,
-        name: strategy.name,
-        code: strategy.code,
-        userId: strategy.userId,
+        id: strategies.id,
+        name: strategies.name,
+        code: strategies.code,
+        userId: strategies.userId,
       })
-      .from(strategy)
-      .where(eq(strategy.isActive, true));
+      .from(strategies)
+      .where(eq(strategies.isActive, true));
 
-    if (strategies.length < 2) {
+    if (strategiesData.length < 2) {
       throw new Error("Need at least 2 active strategies to run tournament");
     }
 
-    console.log(`Found ${strategies.length} active strategies`);
+    console.log(`Found ${strategiesData.length} active strategies`);
 
     // Clear existing participants for this tournament
     await db
-      .delete(tournamentParticipant)
-      .where(eq(tournamentParticipant.tournamentId, tournamentId));
+      .delete(tournamentParticipants)
+      .where(eq(tournamentParticipants.tournamentId, tournamentId));
 
     // Create participants
-    const participants = strategies.map((s) => ({
+    const participants = strategiesData.map((s) => ({
       id: generateId(),
       tournamentId,
       strategyId: s.id,
@@ -238,14 +237,14 @@ export async function runTournament(tournamentId: string): Promise<void> {
       averageScore: 0,
     }));
 
-    await db.insert(tournamentParticipant).values(participants);
+    await db.insert(tournamentParticipants).values(participants);
 
     // Run all games (round robin)
-    const games: any[] = [];
-    for (let i = 0; i < strategies.length; i++) {
-      for (let j = i + 1; j < strategies.length; j++) {
-        const strategy1 = strategies[i];
-        const strategy2 = strategies[j];
+    const gamesData: any[] = [];
+    for (let i = 0; i < strategiesData.length; i++) {
+      for (let j = i + 1; j < strategiesData.length; j++) {
+        const strategy1 = strategiesData[i];
+        const strategy2 = strategiesData[j];
 
         console.log(`Playing: ${strategy1.name} vs ${strategy2.name}`);
 
@@ -275,27 +274,27 @@ export async function runTournament(tournamentId: string): Promise<void> {
           moves: JSON.stringify(gameResult.moves),
         };
 
-        games.push(gameRecord);
+        gamesData.push(gameRecord);
 
         // Update participant scores - Get current values first
         const participant1 = await db
           .select()
-          .from(tournamentParticipant)
+          .from(tournamentParticipants)
           .where(
             and(
-              eq(tournamentParticipant.tournamentId, tournamentId),
-              eq(tournamentParticipant.strategyId, strategy1.id)
+              eq(tournamentParticipants.tournamentId, tournamentId),
+              eq(tournamentParticipants.strategyId, strategy1.id)
             )
           )
           .limit(1);
 
         const participant2 = await db
           .select()
-          .from(tournamentParticipant)
+          .from(tournamentParticipants)
           .where(
             and(
-              eq(tournamentParticipant.tournamentId, tournamentId),
-              eq(tournamentParticipant.strategyId, strategy2.id)
+              eq(tournamentParticipants.tournamentId, tournamentId),
+              eq(tournamentParticipants.strategyId, strategy2.id)
             )
           )
           .limit(1);
@@ -303,7 +302,7 @@ export async function runTournament(tournamentId: string): Promise<void> {
         if (participant1.length > 0) {
           const p1 = participant1[0];
           await db
-            .update(tournamentParticipant)
+            .update(tournamentParticipants)
             .set({
               totalScore: (p1.totalScore || 0) + gameResult.player1TotalScore,
               wins:
@@ -319,13 +318,13 @@ export async function runTournament(tournamentId: string): Promise<void> {
                   ? (p1.draws || 0) + 1
                   : p1.draws || 0,
             })
-            .where(eq(tournamentParticipant.id, p1.id));
+            .where(eq(tournamentParticipants.id, p1.id));
         }
 
         if (participant2.length > 0) {
           const p2 = participant2[0];
           await db
-            .update(tournamentParticipant)
+            .update(tournamentParticipants)
             .set({
               totalScore: (p2.totalScore || 0) + gameResult.player2TotalScore,
               wins:
@@ -341,21 +340,21 @@ export async function runTournament(tournamentId: string): Promise<void> {
                   ? (p2.draws || 0) + 1
                   : p2.draws || 0,
             })
-            .where(eq(tournamentParticipant.id, p2.id));
+            .where(eq(tournamentParticipants.id, p2.id));
         }
       }
     }
 
     // Insert all games
-    if (games.length > 0) {
-      await db.insert(game).values(games);
+    if (gamesData.length > 0) {
+      await db.insert(games).values(gamesData);
     }
 
     // Calculate final rankings
     const finalParticipants = await db
       .select()
-      .from(tournamentParticipant)
-      .where(eq(tournamentParticipant.tournamentId, tournamentId));
+      .from(tournamentParticipants)
+      .where(eq(tournamentParticipants.tournamentId, tournamentId));
 
     // Sort by total score and assign ranks
     finalParticipants.sort((a, b) => (b.totalScore || 0) - (a.totalScore || 0));
@@ -370,22 +369,22 @@ export async function runTournament(tournamentId: string): Promise<void> {
         totalGames > 0 ? (participant.totalScore || 0) / totalGames : 0;
 
       await db
-        .update(tournamentParticipant)
+        .update(tournamentParticipants)
         .set({
           rank: i + 1,
           averageScore,
         })
-        .where(eq(tournamentParticipant.id, participant.id));
+        .where(eq(tournamentParticipants.id, participant.id));
     }
 
     // Mark tournament as completed
     await db
-      .update(tournament)
+      .update(tournaments)
       .set({
         status: "completed",
         completedAt: new Date(),
       })
-      .where(eq(tournament.id, tournamentId));
+      .where(eq(tournaments.id, tournamentId));
 
     console.log(`Tournament ${tournamentId} completed successfully`);
   } catch (error) {
@@ -393,13 +392,13 @@ export async function runTournament(tournamentId: string): Promise<void> {
 
     // Mark tournament as failed
     await db
-      .update(tournament)
+      .update(tournaments)
       .set({
         status: "failed",
         errorMessage: error instanceof Error ? error.message : "Unknown error",
         completedAt: new Date(),
       })
-      .where(eq(tournament.id, tournamentId));
+      .where(eq(tournaments.id, tournamentId));
 
     throw error;
   }

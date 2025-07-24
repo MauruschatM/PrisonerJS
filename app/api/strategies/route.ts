@@ -1,10 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/config/auth";
 import { headers } from "next/headers";
-import { db } from "@/lib/db";
-import { strategy } from "@/lib/db/schema";
+import db from "@/lib/db";
+import { strategies } from "@/lib/db/schema";
 import { eq, and } from "drizzle-orm";
-import { generateId } from "@/lib/utils";
+import { nanoid } from "nanoid";
 
 // Validate JavaScript code for Prisoner's Dilemma strategy
 function validateStrategyCode(code: string): {
@@ -71,9 +71,9 @@ export async function GET(request: NextRequest) {
 
     const userStrategies = await db
       .select()
-      .from(strategy)
-      .where(eq(strategy.userId, session.user.id))
-      .orderBy(strategy.createdAt);
+      .from(strategies)
+      .where(eq(strategies.userId, session.user.id))
+      .orderBy(strategies.createdAt);
 
     return NextResponse.json({ strategies: userStrategies });
   } catch (error) {
@@ -113,8 +113,10 @@ export async function POST(request: NextRequest) {
     // Check if user already has a strategy with this name
     const existingStrategy = await db
       .select()
-      .from(strategy)
-      .where(and(eq(strategy.userId, session.user.id), eq(strategy.name, name)))
+      .from(strategies)
+      .where(
+        and(eq(strategies.userId, session.user.id), eq(strategies.name, name))
+      )
       .limit(1);
 
     if (existingStrategy.length > 0) {
@@ -125,7 +127,7 @@ export async function POST(request: NextRequest) {
     }
 
     const newStrategy = {
-      id: generateId(),
+      id: nanoid(),
       name,
       description: description || null,
       code,
@@ -133,7 +135,7 @@ export async function POST(request: NextRequest) {
       isActive: true,
     };
 
-    await db.insert(strategy).values(newStrategy);
+    await db.insert(strategies).values(newStrategy);
 
     return NextResponse.json({ strategy: newStrategy }, { status: 201 });
   } catch (error) {
@@ -175,8 +177,8 @@ export async function PUT(request: NextRequest) {
     // Check if strategy exists and belongs to user
     const existingStrategy = await db
       .select()
-      .from(strategy)
-      .where(and(eq(strategy.id, id), eq(strategy.userId, session.user.id)))
+      .from(strategies)
+      .where(and(eq(strategies.id, id), eq(strategies.userId, session.user.id)))
       .limit(1);
 
     if (existingStrategy.length === 0) {
@@ -196,14 +198,16 @@ export async function PUT(request: NextRequest) {
     if (isActive !== undefined) updateData.isActive = isActive;
 
     await db
-      .update(strategy)
+      .update(strategies)
       .set(updateData)
-      .where(and(eq(strategy.id, id), eq(strategy.userId, session.user.id)));
+      .where(
+        and(eq(strategies.id, id), eq(strategies.userId, session.user.id))
+      );
 
     const updatedStrategy = await db
       .select()
-      .from(strategy)
-      .where(eq(strategy.id, id))
+      .from(strategies)
+      .where(eq(strategies.id, id))
       .limit(1);
 
     return NextResponse.json({ strategy: updatedStrategy[0] });

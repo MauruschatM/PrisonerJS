@@ -1,5 +1,5 @@
-import { db } from "@/lib/db";
-import { tournament } from "@/lib/db/schema";
+import db from "@/lib/db";
+import { tournaments } from "@/lib/db/schema";
 import { runTournament } from "@/lib/tournament-engine";
 import { generateId } from "@/lib/utils";
 
@@ -18,7 +18,7 @@ export async function createWeeklyTournament(): Promise<string> {
       status: "pending" as const,
     };
 
-    await db.insert(tournament).values(newTournament);
+    await db.insert(tournaments).values(newTournament);
 
     console.log(`Weekly tournament created: ${newTournament.id}`);
     return newTournament.id;

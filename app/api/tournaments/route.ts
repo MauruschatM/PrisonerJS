@@ -1,34 +1,34 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/config/auth";
 import { headers } from "next/headers";
-import { db } from "@/lib/db";
+import db from "@/lib/db";
 import {
-  tournament,
-  tournamentParticipant,
-  strategy,
-  user,
+  tournaments,
+  tournamentParticipants,
+  strategies,
+  users,
 } from "@/lib/db/schema";
 import { desc, eq } from "drizzle-orm";
 
 export async function GET(request: NextRequest) {
   try {
-    const tournaments = await db
+    const tournamentsData = await db
       .select({
-        id: tournament.id,
-        name: tournament.name,
-        description: tournament.description,
-        status: tournament.status,
-        roundsPerMatch: tournament.roundsPerMatch,
-        scheduledAt: tournament.scheduledAt,
-        startedAt: tournament.startedAt,
-        completedAt: tournament.completedAt,
-        createdAt: tournament.createdAt,
+        id: tournaments.id,
+        name: tournaments.name,
+        description: tournaments.description,
+        status: tournaments.status,
+        roundsPerMatch: tournaments.roundsPerMatch,
+        scheduledAt: tournaments.scheduledAt,
+        startedAt: tournaments.startedAt,
+        completedAt: tournaments.completedAt,
+        createdAt: tournaments.createdAt,
       })
-      .from(tournament)
-      .orderBy(desc(tournament.createdAt))
+      .from(tournaments)
+      .orderBy(desc(tournaments.createdAt))
       .limit(20);
 
-    return NextResponse.json({ tournaments });
+    return NextResponse.json({ tournaments: tournamentsData });
   } catch (error) {
     console.error("Error fetching tournaments:", error);
     return NextResponse.json(
@@ -73,7 +73,7 @@ export async function POST(request: NextRequest) {
       status: "pending",
     };
 
-    await db.insert(tournament).values(newTournament);
+    await db.insert(tournaments).values(newTournament);
 
     return NextResponse.json({ tournament: newTournament }, { status: 201 });
   } catch (error) {

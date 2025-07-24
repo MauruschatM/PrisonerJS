@@ -1,12 +1,9 @@
-import { drizzle } from "drizzle-orm/better-sqlite3";
-import Database from "better-sqlite3";
+import { drizzle } from "drizzle-orm/neon-http";
 import * as schema from "./schema";
 
-const sqlite = new Database("auth-drizzle.db");
+const db = drizzle(
+  "postgresql://neondb_owner:npg_VwyKFjC4PBG7@ep-bold-butterfly-a2hnorga-pooler.eu-central-1.aws.neon.tech/neondb?sslmode=require&channel_binding=require",
+  { schema }
+);
 
-// Enable WAL mode for better concurrency
-sqlite.pragma("journal_mode = WAL");
-
-export const db = drizzle(sqlite, { schema });
-
-export * from "./schema";
+export default db;
