@@ -1,0 +1,51 @@
+# Build outputs
+dist/
+build/
+.output/
+.vinxi/
+
+# Dependencies
+node_modules/
+
+# Generated files
+src/lib/db/schema/auth.ts
+src/lib/db/migrations/
+
+# Cache and logs
+.turbo/
+.next/
+.nuxt/
+.vite/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Environment files
+.env
+.env.*
+
+# Package managers
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# IDE files
+.vscode/settings.json
+.idea/
+
+# Test coverage
+coverage/
+
+# Temporary files
+*.tmp
+*.temp 
