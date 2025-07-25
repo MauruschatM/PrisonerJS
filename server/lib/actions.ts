@@ -11,6 +11,7 @@ import {
 	games,
 } from "@/server/lib/db/schema";
 import { revalidatePath } from "next/cache";
+import { runTournament } from "@/server/lib/tournament-engine";
 
 export async function createTournament(
     name: string, 
@@ -80,7 +81,7 @@ export async function createTestTournament() {
         //         roundsPerMatch: 100,
         //     }),
         // });
-        await runTournament(response.id);
+        await startTournament(response.id);
         revalidatePath("/tournaments");
         // if (response.ok) {
         //     const data = await response.json();
@@ -96,10 +97,21 @@ export async function createTestTournament() {
 	
 }
 
-async function runTournament(tournamentId: string) {
+export async function startTournament(tournamentId: string) {
     try {
-        // Get tournament details
-        const tournamentData = await db
+        // const session = await auth.api.getSession({
+		// 	headers: await headers(),
+		// });
+
+		// if (!session) {
+		// 	return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+		// }
+		if (!tournamentId) {
+			throw new Error("Tournament ID is required");
+		}
+
+		// Check if tournament exists and is pending
+		const tournamentData = await db
 			.select()
 			.from(tournaments)
 			.where(eq(tournaments.id, tournamentId))
@@ -109,46 +121,16 @@ async function runTournament(tournamentId: string) {
 			throw new Error("Tournament not found");
 		}
 
-        // Get participants with rankings
-		const participants = await db
-			.select({
-				id: tournamentParticipants.id,
-				totalScore: tournamentParticipants.totalScore,
-				wins: tournamentParticipants.wins,
-				losses: tournamentParticipants.losses,
-				draws: tournamentParticipants.draws,
-				averageScore: tournamentParticipants.averageScore,
-				rank: tournamentParticipants.rank,
-				strategyName: strategies.name,
-				strategyDescription: strategies.description,
-				userName: users.name,
-				userId: users.id,
-			})
-			.from(tournamentParticipants)
-			.innerJoin(strategies, eq(tournamentParticipants.strategyId, strategies.id))
-			.innerJoin(users, eq(tournamentParticipants.userId, users.id))
-			.where(eq(tournamentParticipants.tournamentId, tournamentId))
-			.orderBy(tournamentParticipants.rank);
+		if (tournamentData[0].status !== "pending") {
+			throw new Error(`Tournament is ${tournamentData[0].status}, cannot run`);
+		}
+        
+        runTournament(tournamentId)
+        console.log(`Running tournament ${tournamentId}...`);
+		return tournamentId
 
-		// Get recent games
-		const gamesData = await db
-			.select({
-				id: games.id,
-				rounds: games.rounds,
-				strategy1Score: games.strategy1Score,
-				strategy2Score: games.strategy2Score,
-				winner: games.winner,
-				createdAt: games.createdAt,
-				strategy1Name: strategies.name,
-				strategy2Name: strategies.name, // This will be overwritten by the second join
-			})
-			.from(games)
-			.innerJoin(strategies, eq(games.strategy1Id, strategies.id))
-			.where(eq(games.tournamentId, tournamentId))
-			.orderBy(desc(games.createdAt))
-			.limit(10);
     } catch (error) {
-        console.error("Error running tournament:", error);
-        throw new Error("Failed to run tournament");
+        console.error("Error starting tournament:", error);
+        throw new Error("Error starting tournament");
     }
 }
