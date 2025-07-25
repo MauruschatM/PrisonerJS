@@ -86,7 +86,11 @@ export async function createTestTournament() {
         //     const data = await response.json();
         //     await runTournament(data.tournament.id);
         // }
+<<<<<<< Updated upstream
         
+=======
+        return response
+>>>>>>> Stashed changes
     } catch (error) {
         console.error("Error creating test tournament:", error);
         throw new Error("Failed to create test tournament");
