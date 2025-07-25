@@ -2,6 +2,7 @@ import db from "@/server/lib/db";
 import { tournaments, tournamentParticipants, strategies, games } from "@/server/lib/db/schema";
 import { eq, and } from "drizzle-orm";
 import { generateId } from "@/shared/utils";
+import { revalidatePath } from "next/cache";
 
 // Prisoner's Dilemma payoff matrix
 const PAYOFF_MATRIX = {
@@ -343,6 +344,7 @@ export async function runTournament(tournamentId: string): Promise<void> {
 				completedAt: new Date(),
 			})
 			.where(eq(tournaments.id, tournamentId));
+
 
 		console.log(`Tournament ${tournamentId} completed successfully`);
 	} catch (error) {

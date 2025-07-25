@@ -81,8 +81,15 @@ export async function createTestTournament() {
         //         roundsPerMatch: 100,
         //     }),
         // });
-        await startTournament(response.id);
+        const tournamentId = await startTournament(response.id);
+        //somehow this one is not working
+        console.log(`Running tournament ${tournamentId}...`);
         revalidatePath("/tournaments");
+        runTournament(tournamentId);
+        //revalidatePath("/tournaments");
+        // await revalidatePath("/tournaments");
+        //revalidatePath(`/tournaments/${tournamentId}`);
+
         // if (response.ok) {
         //     const data = await response.json();
         //     await runTournament(data.tournament.id);
@@ -125,8 +132,6 @@ export async function startTournament(tournamentId: string) {
 			throw new Error(`Tournament is ${tournamentData[0].status}, cannot run`);
 		}
         
-        runTournament(tournamentId)
-        console.log(`Running tournament ${tournamentId}...`);
 		return tournamentId
 
     } catch (error) {
