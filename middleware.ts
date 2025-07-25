@@ -7,8 +7,13 @@ export async function middleware(request: NextRequest) {
   // Öffentliche Routen, die keine Authentifizierung benötigen
   const publicRoutes = ["/", "/auth", "/api/auth"];
 
-  // Wenn es eine öffentliche Route ist, lass sie durch
-  if (publicRoutes.some((route) => pathname.startsWith(route))) {
+  // TODO: CHECKEN OB DAS SINN MACHT
+  // /tournaments und /tournaments/[id] sollen immer geschützt sein
+  const protectedTournaments =
+    pathname === "/tournaments" || pathname.startsWith("/tournaments/");
+
+  // Wenn es eine öffentliche Route ist und KEINE geschützte Tournament-Route, lass sie durch
+  if (!protectedTournaments && publicRoutes.some((route) => pathname.startsWith(route))) {
     return NextResponse.next();
   }
 
