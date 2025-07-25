@@ -4,7 +4,7 @@ import { desc } from "drizzle-orm";
 
 export async function fetchTournaments() {
     try {
-        const tournamentsData = await db
+        const response = await db
             .select({
                 id: tournaments.id,
                 name: tournaments.name,
@@ -19,8 +19,7 @@ export async function fetchTournaments() {
             .from(tournaments)
             .orderBy(desc(tournaments.createdAt))
             .limit(20);
-
-        return tournamentsData;
+        return response;
     } catch (error) {
         console.error('Database Error:', error);
         throw new Error('Failed to fetch revenue data.');

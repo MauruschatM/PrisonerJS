@@ -9,19 +9,20 @@ import { Badge } from "@heroui/badge";
 import { Divider } from "@heroui/divider";
 import { formatDate, formatScore } from "@/shared/utils";
 import { useRouter } from "next/navigation";
-import { fetchTournaments } from "../lib/data";
+import TournamentCard from "../components/tournaments/tournamentCard";
+import { Tournament } from "@/app/lib/types";
 
-interface Tournament {
-	id: string;
-	name: string;
-	description: string | null;
-	status: "pending" | "running" | "completed" | "failed";
-	roundsPerMatch: number;
-	scheduledAt: string | null;
-	startedAt: string | null;
-	completedAt: string | null;
-	createdAt: string;
-}
+// interface Tournament {
+// 	id: string;
+// 	name: string;
+// 	description: string | null;
+// 	status: "pending" | "running" | "completed" | "failed";
+// 	roundsPerMatch: number;
+// 	scheduledAt: string | null;
+// 	startedAt: string | null;
+// 	completedAt: string | null;
+// 	createdAt: string;
+// }
 
 export default function TournamentsPage() {
 	const [tournaments, setTournaments] = useState<Tournament[]>([]);
@@ -92,35 +93,7 @@ export default function TournamentsPage() {
 		}
 	};
 
-	const getStatusColor = (status: string) => {
-		switch (status) {
-			case "pending":
-				return "default";
-			case "running":
-				return "warning";
-			case "completed":
-				return "success";
-			case "failed":
-				return "danger";
-			default:
-				return "default";
-		}
-	};
-
-	const getStatusText = (status: string) => {
-		switch (status) {
-			case "pending":
-				return "Wartend";
-			case "running":
-				return "Läuft";
-			case "completed":
-				return "Abgeschlossen";
-			case "failed":
-				return "Fehlgeschlagen";
-			default:
-				return status;
-		}
-	};
+	
 
 	const getNextSaturday = () => {
 		const now = new Date();
@@ -131,6 +104,7 @@ export default function TournamentsPage() {
 		nextSaturday.setHours(20, 0, 0, 0); // 8 PM
 		return nextSaturday;
 	};
+
 
 	return (
 		<div className="container mx-auto p-6 max-w-6xl">
@@ -184,78 +158,10 @@ export default function TournamentsPage() {
 					</Card>
 				) : (
 					tournaments.map(tournament => (
-						<Card
-							key={tournament.id}
-							isPressable
-							className="cursor-pointer hover:shadow-lg transition-shadow"
-							onClick={() => router.push(`/tournaments/${tournament.id}`)}>
-							<CardHeader className="flex justify-between items-start">
-								<div>
-									<h3 className="text-lg font-semibold">{tournament.name}</h3>
-									{tournament.description && (
-										<p className="text-gray-600 text-sm">{tournament.description}</p>
-									)}
-								</div>
-								<Chip color={getStatusColor(tournament.status)} variant="flat">
-									{getStatusText(tournament.status)}
-								</Chip>
-							</CardHeader>
-							<CardBody>
-								<div className="space-y-3">
-									<div className="flex justify-between text-sm">
-										<span>Runden pro Spiel:</span>
-										<span>{tournament.roundsPerMatch}</span>
-									</div>
-
-									{tournament.status === "running" && (
-										<Progress label="Tournament läuft..." color="warning" isIndeterminate />
-									)}
-
-									<Divider />
-
-									<div className="grid grid-cols-2 gap-4 text-xs text-gray-600">
-										<div>
-											<span className="font-medium">Erstellt:</span>
-											<br />
-											{formatDate(tournament.createdAt)}
-										</div>
-										{tournament.startedAt && (
-											<div>
-												<span className="font-medium">Gestartet:</span>
-												<br />
-												{formatDate(tournament.startedAt)}
-											</div>
-										)}
-										{tournament.completedAt && (
-											<div>
-												<span className="font-medium">Abgeschlossen:</span>
-												<br />
-												{formatDate(tournament.completedAt)}
-											</div>
-										)}
-										{tournament.scheduledAt && (
-											<div>
-												<span className="font-medium">Geplant:</span>
-												<br />
-												{formatDate(tournament.scheduledAt)}
-											</div>
-										)}
-									</div>
-
-									<div className="flex justify-end">
-										<Button
-											size="sm"
-											variant="light"
-											onClick={e => {
-												e.stopPropagation();
-												router.push(`/tournaments/${tournament.id}`);
-											}}>
-											Details ansehen →
-										</Button>
-									</div>
-								</div>
-							</CardBody>
-						</Card>
+						<TournamentCard 
+							key={tournament.id} 
+							tournament={tournament}
+						/>
 					))
 				)}
 			</div>
