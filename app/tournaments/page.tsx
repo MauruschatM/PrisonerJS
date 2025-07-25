@@ -9,6 +9,7 @@ import { Badge } from "@heroui/badge";
 import { Divider } from "@heroui/divider";
 import { formatDate, formatScore } from "@/shared/utils";
 import { useRouter } from "next/navigation";
+import { fetchTournaments } from "../lib/data";
 
 interface Tournament {
 	id: string;
@@ -24,7 +25,6 @@ interface Tournament {
 
 export default function TournamentsPage() {
 	const [tournaments, setTournaments] = useState<Tournament[]>([]);
-	const [loading, setLoading] = useState(true);
 	const [runningTournament, setRunningTournament] = useState(false);
 	const router = useRouter();
 
@@ -49,9 +49,7 @@ export default function TournamentsPage() {
 			}
 		} catch (error) {
 			console.error("Error fetching tournaments:", error);
-		} finally {
-			setLoading(false);
-		}
+		} 
 	};
 
 	const createTestTournament = async () => {
@@ -133,10 +131,6 @@ export default function TournamentsPage() {
 		nextSaturday.setHours(20, 0, 0, 0); // 8 PM
 		return nextSaturday;
 	};
-
-	if (loading) {
-		return <div className="flex justify-center p-8">Laden...</div>;
-	}
 
 	return (
 		<div className="container mx-auto p-6 max-w-6xl">
