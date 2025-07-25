@@ -1,99 +1,45 @@
-"use client";
-
-import { useEffect, useState } from "react";
-import { Button } from "@heroui/button";
 import { Card, CardHeader, CardBody } from "@heroui/card";
 import { Chip } from "@heroui/chip";
-import { Progress } from "@heroui/progress";
 import { Badge } from "@heroui/badge";
-import { Divider } from "@heroui/divider";
 import { formatDate, formatScore } from "@/shared/utils";
-import { useRouter } from "next/navigation";
 import TournamentCard from "../components/tournaments/tournamentCard";
 import { Tournament } from "@/app/lib/types";
+import { fetchTournaments } from "@/server/lib/data";
+import { revalidatePath } from "next/cache";
+import ReloadButton from "../components/tournaments/reloadButton";
+import CreateTournamentButton from "../components/tournaments/createTournamentButton";
 
-// interface Tournament {
-// 	id: string;
-// 	name: string;
-// 	description: string | null;
-// 	status: "pending" | "running" | "completed" | "failed";
-// 	roundsPerMatch: number;
-// 	scheduledAt: string | null;
-// 	startedAt: string | null;
-// 	completedAt: string | null;
-// 	createdAt: string;
-// }
+export default async function TournamentsPage() {
+	const tournaments: Tournament[] = await fetchTournaments();
+	// const [tournaments, setTournaments] = useState<Tournament[]>([]);
+	// const [runningTournament, setRunningTournament] = useState(false);
 
-export default function TournamentsPage() {
-	const [tournaments, setTournaments] = useState<Tournament[]>([]);
-	const [runningTournament, setRunningTournament] = useState(false);
-	const router = useRouter();
+	// useEffect(() => {
+	// 	fetchTournamentsWrapper();
+	// 	// Poll for updates every 5 seconds if there's a running tournament
+	// 	const interval = setInterval(() => {
+	// 		if (tournaments.some(t => t.status === "running")) {
+	// 			fetchTournamentsWrapper();
+	// 		}
+	// 	}, 5000);
 
-	useEffect(() => {
-		fetchTournaments();
-		// Poll for updates every 5 seconds if there's a running tournament
-		const interval = setInterval(() => {
-			if (tournaments.some(t => t.status === "running")) {
-				fetchTournaments();
-			}
-		}, 5000);
-
-		return () => clearInterval(interval);
-	}, [tournaments]);
-
-	const fetchTournaments = async () => {
-		try {
-			const response = await fetch("/api/tournaments");
-			if (response.ok) {
-				const data = await response.json();
-				setTournaments(data.tournaments);
-			}
-		} catch (error) {
-			console.error("Error fetching tournaments:", error);
-		} 
-	};
-
-	const createTestTournament = async () => {
-		try {
-			setRunningTournament(true);
-			const response = await fetch("/api/tournaments", {
-				method: "POST",
-				headers: { "Content-Type": "application/json" },
-				body: JSON.stringify({
-					name: `Test Tournament ${new Date().toLocaleDateString()}`,
-					description: "Manuell gestartetes Test-Tournament",
-					roundsPerMatch: 100,
-				}),
-			});
-
-			if (response.ok) {
-				const data = await response.json();
-				await runTournament(data.tournament.id);
-			}
-		} catch (error) {
-			console.error("Error creating tournament:", error);
-		} finally {
-			setRunningTournament(false);
-		}
-	};
-
-	const runTournament = async (tournamentId: string) => {
-		try {
-			const response = await fetch("/api/tournaments/run", {
-				method: "POST",
-				headers: { "Content-Type": "application/json" },
-				body: JSON.stringify({ tournamentId }),
-			});
-
-			if (response.ok) {
-				await fetchTournaments();
-			}
-		} catch (error) {
-			console.error("Error running tournament:", error);
-		}
-	};
-
+	// 	return () => clearInterval(interval);
+	// }, [tournaments]);
 	
+	const fetchTournamentsWrapper = async () => {
+		const response: Tournament[] = await fetchTournaments();
+		// setTournaments(response);
+
+		// try {
+		// 	const response = await fetch("/api/tournaments");
+		// 	if (response.ok) {
+		// 		const data = await response.json();
+		// 		setTournaments(data.tournaments);
+		// 	}
+		// } catch (error) {
+		// 	console.error("Error fetching tournaments:", error);
+		// } 
+	};
 
 	const getNextSaturday = () => {
 		const now = new Date();
@@ -135,18 +81,15 @@ export default function TournamentsPage() {
 				</Card>
 
 				<div className="flex gap-4 mb-6">
-					<Button color="primary" onClick={createTestTournament} isLoading={runningTournament}>
-						Test Tournament starten
-					</Button>
-					<Button variant="light" onClick={fetchTournaments}>
-						Aktualisieren
-					</Button>
+					<CreateTournamentButton/>
+					<ReloadButton />
 				</div>
 			</div>
 
 			<div className="space-y-4">
 				<h2 className="text-2xl font-semibold">Tournament Historie</h2>
 
+				{/* TODO: Replace with Skeleton :) */}
 				{tournaments.length === 0 ? (
 					<Card>
 						<CardBody>

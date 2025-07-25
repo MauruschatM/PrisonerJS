@@ -1,8 +1,10 @@
+"use server";
 import db from "@/server/lib/db";
 import { tournaments } from "@/server/lib/db/schema";
 import { desc } from "drizzle-orm";
+import { Tournament } from "@/app/lib/types";
 
-export async function fetchTournaments() {
+export async function fetchTournaments(): Promise<Tournament[]> {
     try {
         const response = await db
             .select({
@@ -15,6 +17,8 @@ export async function fetchTournaments() {
                 startedAt: tournaments.startedAt,
                 completedAt: tournaments.completedAt,
                 createdAt: tournaments.createdAt,
+                updatedAt: tournaments.updatedAt,
+                errorMessage: tournaments.errorMessage,
             })
             .from(tournaments)
             .orderBy(desc(tournaments.createdAt))

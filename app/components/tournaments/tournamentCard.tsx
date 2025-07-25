@@ -1,13 +1,9 @@
-import { useRouter } from 'next/navigation';
-
 import { Card, CardHeader, CardBody } from "@heroui/card";
 import { Chip } from "@heroui/chip";
 import { Progress } from "@heroui/progress";
-import { Badge } from "@heroui/badge";
 import { Divider } from "@heroui/divider";
 import { formatDate } from "@/shared/utils";
 import { Tournament } from "@/app/lib/types";
-import { Button } from "@heroui/button";
 import Link from 'next/link'
 
 const getStatusColor = (status: string) => {
@@ -45,7 +41,6 @@ type TournamentCardProps = {
 };
 
 export default function TournamentCard({ tournament }: TournamentCardProps) {
-	const router = useRouter();
 	return (
 		<Card
 			as={Link}

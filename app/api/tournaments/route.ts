@@ -32,6 +32,7 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
 	try {
+		console.log("Creating tournament...");
 		const session = await auth.api.getSession({
 			headers: await headers(),
 		});
