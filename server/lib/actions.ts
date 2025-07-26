@@ -23,6 +23,13 @@ export async function createTournament(
 ) {
     console.log("Creating tournament...");
 
+    // session
+    const session = await auth.api.getSession({
+        headers: await headers(),
+    });
+    const user = session?.user;
+    if (!user) throw new Error("Not authenticated");
+
     try {
 		const newTournament: Tournament = {
 			id: Math.random().toString(36).substring(2) + Date.now().toString(36),
@@ -31,6 +38,7 @@ export async function createTournament(
 			roundsPerMatch,
 			scheduledAt: scheduledAt ? new Date(scheduledAt) : null,
 			status: "pending",
+            created_by: user.id,
             createdAt: new Date(),
             updatedAt: new Date(),
             startedAt: null,
