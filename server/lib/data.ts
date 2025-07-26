@@ -1,11 +1,10 @@
 "use server";
 import db from "@/server/lib/db";
-import { tournaments, strategies } from "@/server/lib/db/schema";
-import { desc, eq } from "drizzle-orm";
+import { tournaments, strategies, tournamentParticipants } from "@/server/lib/db/schema";
+import { and, desc, eq } from "drizzle-orm";
 import { Tournament } from "@/app/lib/types";
 import { auth } from "../auth/config";
 import { headers } from "next/headers";
-
 
 
 export async function fetchTournaments(): Promise<Tournament[]> {
@@ -37,7 +36,7 @@ export async function fetchTournaments(): Promise<Tournament[]> {
     }
 }
 
-export async function fetchStrategyNameList(): Promise<{ name: string }[]> {
+export async function fetchStrategyNameAndIdList(): Promise<{ name: string, id: string }[]> {
     //TODO: Remove!
     // artificially delay to simulate loading
     await new Promise(resolve => setTimeout(resolve, 5000));
@@ -49,7 +48,7 @@ export async function fetchStrategyNameList(): Promise<{ name: string }[]> {
         if (!user) throw new Error("Not authenticated");
 
         const response = await db
-            .select({ name: strategies.name })
+            .select({ id: strategies.id ,name: strategies.name })
             .from(strategies)
             .where(eq(strategies.userId, user.id));
         return response;
@@ -59,3 +58,33 @@ export async function fetchStrategyNameList(): Promise<{ name: string }[]> {
     }
 }
 
+
+export async function fetchUsersParticipatingStrategy(tournamentId: string): Promise<{ name: string, id: string }[]> {
+    try {
+        const session = await auth.api.getSession({
+            headers: await headers(),
+        })
+        const user = session?.user;
+        if (!user) throw new Error("Not authenticated");
+
+        const response = await db
+            .select({ id: strategies.id ,name: strategies.name })
+            .from(strategies)
+            .innerJoin(tournamentParticipants, eq(strategies.id, tournamentParticipants.strategyId))
+            .where(
+                and(
+                    eq(tournamentParticipants.userId, user.id),
+                    eq(tournamentParticipants.tournamentId, tournamentId)
+                )
+            )
+            .orderBy(strategies.name);
+
+        if (response.length === 0) {
+            return [{ id: "-1", name: "No strategies found"}];
+        }
+        return response;
+    } catch (error) {
+        console.error('Database Error:', error);
+        throw new Error('Failed to fetch participating strategies.');
+    }
+}

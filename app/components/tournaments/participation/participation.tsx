@@ -1,5 +1,5 @@
 "use server";
-import { fetchStrategyNameList } from "@/server/lib/data";
+import { fetchStrategyNameAndIdList, fetchUsersParticipatingStrategy } from "@/server/lib/data";
 import { Select, SelectSection, SelectItem } from "@heroui/select";
 import StrategySelection from "./selection";
 import { Suspense } from "react";
@@ -7,7 +7,8 @@ import SelectionSkeleton from "./selectionSkeleton";
 
 export default async function Participation() {
     //TODO: Only active strategies?
-    const nameList = fetchStrategyNameList();
+    const strategyList = fetchStrategyNameAndIdList();
+    //const initialSelectedStrategy = fetchUsersParticipatingStrategy();
     
     return (
         <Suspense fallback={
@@ -15,7 +16,7 @@ export default async function Participation() {
                 <SelectionSkeleton />
             </div>
         }>
-            <StrategySelection nameList={nameList} />
+            {/* <StrategySelection strategyList={strategyList} initialSelectedStrategy={initialSelectedStrategy} /> */}
         </Suspense>
     );
 }

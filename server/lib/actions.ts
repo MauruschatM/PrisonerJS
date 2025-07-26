@@ -2,7 +2,7 @@
 
 import { Tournament } from "@/app/lib/types";
 import db from "@/server/lib/db";
-import { eq, desc } from "drizzle-orm";
+import { eq, desc, and } from "drizzle-orm";
 import {
 	tournaments,
 	tournamentParticipants,
@@ -12,6 +12,8 @@ import {
 } from "@/server/lib/db/schema";
 import { revalidatePath } from "next/cache";
 import { runTournament } from "@/server/lib/tournament-engine";
+import { auth } from "../auth/config";
+import { headers } from "next/headers";
 
 export async function createTournament(
     name: string, 
@@ -116,5 +118,48 @@ export async function startTournament(tournamentId: string) {
     } catch (error) {
         console.error("Error starting tournament:", error);
         throw new Error("Error starting tournament");
+    }
+}
+
+export async function updateUsersParticipatingStrategy(strategyId: string, tournamentId: string) {
+    try {
+        const session = await auth.api.getSession({
+            headers: await headers(),
+        });
+        const user = session?.user;
+        if (!user) throw new Error("Not authenticated");
+
+        const userId = user.id;
+
+        //if strategyId is not a users strategy, throw an error
+        const matchingStrategy = await db
+            .select()
+            .from(strategies)
+            .where(
+                and(
+                    eq(strategies.id, strategyId),
+                    eq(strategies.userId, userId)
+                )
+            )
+            .limit(1)
+
+        if (matchingStrategy.length === 0) {
+            console.error("Strategy not found or does not belong to user");
+            throw new Error("Strategy not found or does not belong to user");
+        }
+
+        await db
+            .update(tournamentParticipants)
+            .set({ strategyId: strategyId })
+            .where(
+                and(
+                    eq(tournamentParticipants.userId, userId),
+                    eq(tournamentParticipants.tournamentId, tournamentId)
+                )
+            );
+
+    } catch (error) {
+        console.error("Error fetching strategies:", error);
+        throw new Error("Failed to fetch strategies");
     }
 }
