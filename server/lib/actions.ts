@@ -22,21 +22,6 @@ export async function createTournament(
     console.log("Creating tournament...");
 
     try {
-        // const session = await auth.api.getSession({
-        //     headers: await headers(),
-        // });
-
-        // if (!session || !session.user || !session.user.isAdmin) {
-        //     return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
-        // }
-
-		// Only allow admins to create tournaments manually
-		// For now, anyone can create tournaments for testing
-		
-		if (!name) {
-			throw new Error("Tournament name is required");
-		}
-
 		const newTournament: Tournament = {
 			id: Math.random().toString(36).substring(2) + Date.now().toString(36),
 			name,
@@ -106,13 +91,7 @@ export async function createTestTournament() {
 
 export async function startTournament(tournamentId: string) {
     try {
-        // const session = await auth.api.getSession({
-		// 	headers: await headers(),
-		// });
-
-		// if (!session) {
-		// 	return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-		// }
+        
 		if (!tournamentId) {
 			throw new Error("Tournament ID is required");
 		}

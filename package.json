@@ -29,6 +29,7 @@
     "@heroui/listbox": "2.3.22",
     "@heroui/navbar": "2.2.21",
     "@heroui/progress": "^2.2.19",
+    "@heroui/select": "^2.4.24",
     "@heroui/skeleton": "^2.2.15",
     "@heroui/snippet": "2.2.24",
     "@heroui/spacer": "^2.2.17",

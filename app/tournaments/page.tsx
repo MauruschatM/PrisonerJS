@@ -8,38 +8,12 @@ import { fetchTournaments } from "@/server/lib/data";
 import { revalidatePath } from "next/cache";
 import ReloadButton from "../components/tournaments/reloadButton";
 import CreateTournamentButton from "../components/tournaments/createTournamentButton";
+import ParticipateButton from "../components/tournaments/participateButton";
+import Participation from "../components/tournaments/participation";
 
 export default async function TournamentsPage() {
 	const tournaments: Tournament[] = await fetchTournaments();
-	// const [tournaments, setTournaments] = useState<Tournament[]>([]);
-	// const [runningTournament, setRunningTournament] = useState(false);
 
-	// useEffect(() => {
-	// 	fetchTournamentsWrapper();
-	// 	// Poll for updates every 5 seconds if there's a running tournament
-	// 	const interval = setInterval(() => {
-	// 		if (tournaments.some(t => t.status === "running")) {
-	// 			fetchTournamentsWrapper();
-	// 		}
-	// 	}, 5000);
-
-	// 	return () => clearInterval(interval);
-	// }, [tournaments]);
-	
-	const fetchTournamentsWrapper = async () => {
-		const response: Tournament[] = await fetchTournaments();
-		// setTournaments(response);
-
-		// try {
-		// 	const response = await fetch("/api/tournaments");
-		// 	if (response.ok) {
-		// 		const data = await response.json();
-		// 		setTournaments(data.tournaments);
-		// 	}
-		// } catch (error) {
-		// 	console.error("Error fetching tournaments:", error);
-		// } 
-	};
 
 	const getNextSaturday = () => {
 		const now = new Date();
@@ -53,7 +27,7 @@ export default async function TournamentsPage() {
 
 
 	return (
-		<div className="container mx-auto p-6 max-w-6xl">
+		<div className="container mx-auto p-6 max-w-3xl">
 			<div className="mb-8">
 				<h1 className="text-3xl font-bold mb-4">Tournament Dashboard</h1>
 				<p className="text-gray-600 mb-6">
@@ -66,10 +40,11 @@ export default async function TournamentsPage() {
 						<h3 className="text-lg font-semibold">Nächstes automatisches Tournament</h3>
 					</CardHeader>
 					<CardBody>
+						<Participation/>
+						<div className="h-4" />
 						<div className="flex items-center justify-between">
 							<div>
 								<p className="text-sm text-gray-600">{formatDate(getNextSaturday())}</p>
-								<p className="text-xs text-gray-500">Alle aktiven Strategien nehmen automatisch teil</p>
 							</div>
 							<Badge content="Auto" color="primary">
 								<Chip color="primary" variant="flat">
