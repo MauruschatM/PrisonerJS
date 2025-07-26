@@ -9,6 +9,7 @@ import { headers } from "next/headers";
 
 
 export async function fetchTournaments(): Promise<Tournament[]> {
+    //TODO: Remove!
     // artificially delay to simulate loading
     await new Promise(resolve => setTimeout(resolve, 1000));
     try {
@@ -37,6 +38,9 @@ export async function fetchTournaments(): Promise<Tournament[]> {
 }
 
 export async function fetchStrategyNameList(): Promise<{ name: string }[]> {
+    //TODO: Remove!
+    // artificially delay to simulate loading
+    await new Promise(resolve => setTimeout(resolve, 5000));
     try {
         const session = await auth.api.getSession({
             headers: await headers(),

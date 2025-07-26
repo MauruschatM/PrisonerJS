@@ -1,37 +1,21 @@
-// "use client";
-// import { useEffect, useState } from "react";
+"use server";
 import { fetchStrategyNameList } from "@/server/lib/data";
-import { Listbox } from "@heroui/listbox";
 import { Select, SelectSection, SelectItem } from "@heroui/select";
+import StrategySelection from "./selection";
+import { Suspense } from "react";
+import SelectionSkeleton from "./selectionSkeleton";
 
 export default async function Participation() {
-    const nameList = await fetchStrategyNameList();
+    //TODO: Only active strategies?
+    const nameList = fetchStrategyNameList();
     
     return (
-        nameList.map((strategy) =>
-            <h1 key={strategy.name} className="text-lg font-semibold">
-                {strategy.name}
-            </h1>
-        )
-
-        
-        
-    
+        <Suspense fallback={
+            <div className="max-w-xs">
+                <SelectionSkeleton />
+            </div>
+        }>
+            <StrategySelection nameList={nameList} />
+        </Suspense>
     );
-    // const [strategies, setStrategies] = useState<{ name: string }[]>([]);
-
-    // useEffect(() => {
-    //     fetchStrategyNameList().then(setStrategies).catch(() => setStrategies([]));
-    // }, []);
-
-    // return (
-    //     <Select
-    //         className="max-w-xs"
-    //         items={strategies}
-    //         label="Favorite Animal"
-    //         placeholder="Select an animal"
-    //     >
-    //         {(strategy) => <SelectItem>{strategy.name}</SelectItem>}
-    //     </Select>
-    // );
 }

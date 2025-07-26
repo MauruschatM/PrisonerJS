@@ -1,17 +1,36 @@
+"use client";
+import {Select, SelectItem, SelectSection} from "@heroui/select";
+import { use } from "react";
 
-import {Select, SelectItem} from "@heroui/select";
 
-
-export default function StrategySelection(nameList: { name: string }[]) {
+export default function StrategySelection({ 
+    nameList 
+}: { 
+    nameList: Promise<{ name: string }[]>
+}) {
+    const allNames = use(nameList);
 
     return (
-        <Select
-            className="max-w-xs"
-            items={nameList}
-            label="Favorite Strategy"
-            placeholder="Select a strategy"
-        >
-            {(strategy) => <SelectItem key={strategy.name}>{strategy.name}</SelectItem>}
-        </Select>
+        <div>
+            <SelectSection showDivider title="Mammals">
+                <SelectItem key="Lion">Lion</SelectItem>
+            </SelectSection>
+            <Select
+                className="max-w-xs"
+                items={allNames}
+                label="Participating with strategy"
+                placeholder="Select a strategy"
+                isClearable={true} 
+                onSelectionChange={(selected) => {
+                    
+                }}
+                >
+                {(strategy) => (
+                    <SelectItem key={strategy.name}>
+                        {strategy.name}
+                    </SelectItem>
+                )}
+            </Select>
+        </div>
     );
 }
