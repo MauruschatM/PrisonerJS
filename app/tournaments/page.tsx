@@ -28,14 +28,15 @@ export default async function TournamentsPage() {
 
 	return (
 		<div className="container mx-auto p-6 max-w-3xl">
-			<div className="mb-8">
+			<div className="mb-8" >
 				<h1 className="text-3xl font-bold mb-4">Tournament Dashboard</h1>
 				<p className="text-gray-600 mb-6">
 					Verfolgen Sie die Ergebnisse der Prisoner's Dilemma Tournaments. Tournaments laufen automatisch
 					jeden Samstagabend um 20:00 Uhr.
 				</p>
-				
-				{/* <UpcomingTournaments /> */}
+				<div className="pb-6">
+					<UpcomingTournaments />
+				</div>
 				
 				{/* <Card className="mb-6">
 					<CardHeader>
