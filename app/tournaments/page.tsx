@@ -8,8 +8,8 @@ import { fetchTournaments } from "@/server/lib/data";
 import { revalidatePath } from "next/cache";
 import ReloadButton from "../components/tournaments/reloadButton";
 import CreateTournamentButton from "../components/tournaments/createTournamentButton";
-import ParticipateButton from "../components/tournaments/participateButton";
-import Participation from "../components/tournaments/participation";
+import ParticipateButton from "../components/tournaments/participation/participateButton";
+import Participation from "../components/tournaments/participation/participation";
 
 export default async function TournamentsPage() {
 	const tournaments: Tournament[] = await fetchTournaments();
