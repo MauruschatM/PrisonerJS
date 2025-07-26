@@ -12,6 +12,7 @@ import CreateTournamentButton from "../components/tournaments/createTournamentBu
 import ParticipateButton from "../components/tournaments/participation/participateButton";
 import Participation from "../components/tournaments/participation/participation";
 import TournamentHistory from "../components/tournaments/history/tournamentHistory";
+import UpcomingTournaments from "../components/upcoming/upcomingTournaments";
 
 export default async function TournamentsPage() {
 	const getNextSaturday = () => {
@@ -33,8 +34,10 @@ export default async function TournamentsPage() {
 					Verfolgen Sie die Ergebnisse der Prisoner's Dilemma Tournaments. Tournaments laufen automatisch
 					jeden Samstagabend um 20:00 Uhr.
 				</p>
-
-				<Card className="mb-6">
+				
+				{/* <UpcomingTournaments /> */}
+				
+				{/* <Card className="mb-6">
 					<CardHeader>
 						<h3 className="text-lg font-semibold">Nächstes automatisches Tournament</h3>
 					</CardHeader>
@@ -52,7 +55,7 @@ export default async function TournamentsPage() {
 							</Badge>
 						</div>
 					</CardBody>
-				</Card>
+				</Card> */}
 
 				<div className="flex gap-4 mb-6">
 					<CreateTournamentButton/>

@@ -1,4 +1,5 @@
 import { integer, pgTable, text, timestamp } from "drizzle-orm/pg-core";
+import { users } from "../auth";
 
 export const tournaments = pgTable("tournament", {
   id: text().primaryKey(),
@@ -10,6 +11,7 @@ export const tournaments = pgTable("tournament", {
   startedAt: timestamp(),
   completedAt: timestamp(),
   errorMessage: text(),
+  created_by: text().notNull().references(() => users.id, { onDelete: "cascade" }),
   createdAt: timestamp()
     .notNull()
     .$defaultFn(() => new Date()),

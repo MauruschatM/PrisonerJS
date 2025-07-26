@@ -5,7 +5,7 @@ import { and, desc, eq } from "drizzle-orm";
 import { Tournament } from "@/app/lib/types";
 import { auth } from "../auth/config";
 import { headers } from "next/headers";
-
+import { create } from "domain";
 
 export async function fetchTournaments(): Promise<Tournament[]> {
     //TODO: Remove!
@@ -13,26 +13,29 @@ export async function fetchTournaments(): Promise<Tournament[]> {
     await new Promise(resolve => setTimeout(resolve, 1000));
     try {
         const response = await db
-            .select({
-                id: tournaments.id,
-                name: tournaments.name,
-                description: tournaments.description,
-                status: tournaments.status,
-                roundsPerMatch: tournaments.roundsPerMatch,
-                scheduledAt: tournaments.scheduledAt,
-                startedAt: tournaments.startedAt,
-                completedAt: tournaments.completedAt,
-                createdAt: tournaments.createdAt,
-                updatedAt: tournaments.updatedAt,
-                errorMessage: tournaments.errorMessage,
-            })
+            .select()
             .from(tournaments)
             .orderBy(desc(tournaments.createdAt))
             .limit(20);
         return response;
     } catch (error) {
         console.error('Database Error:', error);
-        throw new Error('Failed to fetch revenue data.');
+        throw new Error('Failed to fetch Tournaments.');
+    }
+}
+
+export async function fetchUpcomingTournaments(): Promise<Tournament[]> {
+    try {
+        const response = await db
+            .select() // Selects all columns
+            .from(tournaments)
+            .where(eq(tournaments.status, "pending"))
+            .orderBy(tournaments.scheduledAt)
+            .limit(20); 
+        return response;
+    } catch (error) {
+        console.error('Database Error:', error);
+        throw new Error('Failed to fetch upcoming tournaments.');
     }
 }
 
