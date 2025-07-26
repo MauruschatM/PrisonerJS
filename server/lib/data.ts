@@ -9,6 +9,8 @@ import { headers } from "next/headers";
 
 
 export async function fetchTournaments(): Promise<Tournament[]> {
+    // artificially delay to simulate loading
+    await new Promise(resolve => setTimeout(resolve, 1000));
     try {
         const response = await db
             .select({

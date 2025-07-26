@@ -1,8 +1,9 @@
+"use server"
 import { Card, CardHeader, CardBody } from "@heroui/card";
 import { Chip } from "@heroui/chip";
 import { Badge } from "@heroui/badge";
 import { formatDate, formatScore } from "@/shared/utils";
-import TournamentCard from "../components/tournaments/tournamentCard";
+import TournamentCard from "../components/tournaments/history/tournamentCard";
 import { Tournament } from "@/app/lib/types";
 import { fetchTournaments } from "@/server/lib/data";
 import { revalidatePath } from "next/cache";
@@ -10,11 +11,9 @@ import ReloadButton from "../components/tournaments/reloadButton";
 import CreateTournamentButton from "../components/tournaments/createTournamentButton";
 import ParticipateButton from "../components/tournaments/participation/participateButton";
 import Participation from "../components/tournaments/participation/participation";
+import TournamentHistory from "../components/tournaments/history/tournamentHistory";
 
 export default async function TournamentsPage() {
-	const tournaments: Tournament[] = await fetchTournaments();
-
-
 	const getNextSaturday = () => {
 		const now = new Date();
 		const dayOfWeek = now.getDay();
@@ -60,29 +59,7 @@ export default async function TournamentsPage() {
 					<ReloadButton />
 				</div>
 			</div>
-
-			<div className="space-y-4">
-				<h2 className="text-2xl font-semibold">Tournament Historie</h2>
-
-				{/* TODO: Replace with Skeleton :) */}
-				{tournaments.length === 0 ? (
-					<Card>
-						<CardBody>
-							<p className="text-center text-gray-600">
-								Noch keine Tournaments durchgeführt. Das erste Tournament startet automatisch am nächsten
-								Samstag!
-							</p>
-						</CardBody>
-					</Card>
-				) : (
-					tournaments.map(tournament => (
-						<TournamentCard 
-							key={tournament.id} 
-							tournament={tournament}
-						/>
-					))
-				)}
-			</div>
+			<TournamentHistory/>
 		</div>
 	);
 }
