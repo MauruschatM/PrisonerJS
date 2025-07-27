@@ -4,6 +4,7 @@ import { Select, SelectSection, SelectItem } from "@heroui/select";
 import StrategySelection from "./selection";
 import { Suspense } from "react";
 import SelectionSkeleton from "./selectionSkeleton";
+import { string } from "better-auth/*";
 
 export default async function Participation() {
     //TODO: Only active strategies?
@@ -16,7 +17,7 @@ export default async function Participation() {
                 <SelectionSkeleton />
             </div>
         }>
-            {/* <StrategySelection strategyList={strategyList} initialSelectedStrategy={initialSelectedStrategy} /> */}
+            <StrategySelection strategyList={strategyList} initialSelectedStrategy={initialSelectedStrategy} />
         </Suspense>
     );
 }

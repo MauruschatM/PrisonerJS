@@ -1,7 +1,7 @@
 "use server";
 import db from "@/server/lib/db";
 import { tournaments, strategies, tournamentParticipants } from "@/server/lib/db/schema";
-import { and, desc, eq } from "drizzle-orm";
+import { and, desc, eq, or } from "drizzle-orm";
 import { Tournament } from "@/app/lib/types";
 import { auth } from "../auth/config";
 import { headers } from "next/headers";
@@ -21,6 +21,26 @@ export async function fetchTournaments(): Promise<Tournament[]> {
     } catch (error) {
         console.error('Database Error:', error);
         throw new Error('Failed to fetch Tournaments.');
+    }
+}
+
+export async function fetchOldTournaments(): Promise<Tournament[]> {
+    try {
+        const response = await db
+            .select()
+            .from(tournaments)
+            .where(
+                or(
+                    eq(tournaments.status, "completed"),
+                    eq(tournaments.status, "failed")
+                )
+            )
+            .orderBy(desc(tournaments.createdAt))
+            .limit(20);
+        return response;
+    } catch (error) {
+        console.error('Database Error:', error);
+        throw new Error('Failed to fetch old tournaments.');
     }
 }
 

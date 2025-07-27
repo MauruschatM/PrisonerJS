@@ -1,18 +1,10 @@
 "use server"
-import { Card, CardHeader, CardBody } from "@heroui/card";
-import { Chip } from "@heroui/chip";
-import { Badge } from "@heroui/badge";
-import { formatDate, formatScore } from "@/shared/utils";
-import TournamentCard from "../components/tournaments/history/tournamentCard";
-import { Tournament } from "@/app/lib/types";
-import { fetchTournaments } from "@/server/lib/data";
-import { revalidatePath } from "next/cache";
 import ReloadButton from "../components/tournaments/reloadButton";
 import CreateTournamentButton from "../components/tournaments/createTournamentButton";
 import ParticipateButton from "../components/tournaments/participation/participateButton";
 import Participation from "../components/tournaments/participation/participation";
 import TournamentHistory from "../components/tournaments/history/tournamentHistory";
-import UpcomingTournaments from "../components/upcoming/upcomingTournaments";
+import UpcomingTournaments from "../components/tournaments/upcoming/upcomingTournaments";
 
 export default async function TournamentsPage() {
 	const getNextSaturday = () => {

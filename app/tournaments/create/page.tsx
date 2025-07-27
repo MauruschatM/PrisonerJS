@@ -1,4 +1,4 @@
-import CreateNewTournament from "@/app/components/upcoming/createNewTournament";
+import CreateNewTournament from "@/app/components/tournaments/upcoming/createNewTournament";
 
 
 export default function CreateTournamentPage() {

@@ -63,9 +63,9 @@ export default function TournamentCard({ tournament }: TournamentCardProps) {
 			</CardHeader>
 			<CardBody>
 				<div className="space-y-3">
-					<div className="flex justify-between text-sm">
+					<div className="flex justify-start text-sm">
 						<span>Runden pro Spiel:</span>
-						<span>{tournament.roundsPerMatch}</span>
+						<span className="ml-2">{tournament.roundsPerMatch}</span>
 					</div>
 
 					{tournament.status === "running" && (

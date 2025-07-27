@@ -1,6 +1,6 @@
 import { fetchUpcomingTournaments } from "@/server/lib/data";
 import { Suspense } from "react";
-import HistoryList from "../tournaments/history/historyList";
+import HistoryList from "../history/historyList";
 import { tournaments } from "@/server/lib/db/schema";
 import { Button } from "@heroui/button";
 import CreateNewTournament from "./createNewTournament";
