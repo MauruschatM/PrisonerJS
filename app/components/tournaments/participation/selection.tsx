@@ -16,30 +16,32 @@ export default function StrategySelection({
     tournamentId
 }: { 
     strategyList: Promise<Strategy[]>,
-    initialSelectedStrategy: Promise<Strategy[]>,
+    initialSelectedStrategy: Promise<Strategy>,
     tournamentId: string
 }) {
     const allStrategies = use(strategyList);
-    // const initialSelectedS = use(initialSelectedStrategy);
-    // const [selectedStrategy, setSelectedStrategy] = useState(
-    //   initialSelectedS.length > 0 ? initialSelectedS[0].id : undefined
-    // );
+    const initialSelectedS = use(initialSelectedStrategy);
+    const [selectedStrategy, setSelectedStrategy] = useState(initialSelectedS);
 
     function handleSelectionChange(keys: SharedSelection) {
         const key = keys.currentKey;
         if (!key) return;
+        const selectedStrategy = allStrategies.find(strategy => strategy.id === key);
+        if (selectedStrategy) {
+            setSelectedStrategy(selectedStrategy);
+        }
         updateUsersParticipatingStrategy(tournamentId, key);
     }
 
     return (
         <div>
             <Select
+                selectedKeys={selectedStrategy ? new Set([selectedStrategy.id]) : new Set()}
                 className="max-w-xs"
                 items={allStrategies}
                 label="Participating with strategy"
                 placeholder="Select a strategy"
                 isClearable={true}
-                // selectedKeys={selectedStrategy ? new Set([selectedStrategy]) : undefined}
                 onSelectionChange={handleSelectionChange}
             >
                 {(strategy: Strategy) => (

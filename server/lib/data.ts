@@ -84,7 +84,7 @@ export async function fetchStrategyNameAndIdList(): Promise<{ name: string, id: 
 }
 
 
-export async function fetchUsersTournamentStrategy(tournamentId: string): Promise<{ name: string, id: string }[]> {
+export async function fetchUsersTournamentStrategy(tournamentId: string): Promise<{ name: string, id: string }> {
     try {
         const session = await auth.api.getSession({
             headers: await headers(),
@@ -105,9 +105,12 @@ export async function fetchUsersTournamentStrategy(tournamentId: string): Promis
             .orderBy(strategies.name);
 
         if (response.length === 0) {
-            return [{ id: "-1", name: "No strategies found"}];
+            return { id: "-1", name: "No strategies found"};
         }
-        return response;
+        if (response.length !== 1) {
+            throw new Error("Mehr als eine Strategie gefunden :/ Diese FUnktion wurde nicht dafür ausgelegt");
+        }
+        return response[0];
     } catch (error) {
         console.error('Database Error:', error);
         throw new Error("Tournament: " + tournamentId + " Failed to fetch participating strategies.");
