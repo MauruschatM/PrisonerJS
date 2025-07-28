@@ -12,9 +12,9 @@ export default function TournamentInfoBody(
     unresParticipants,
 	unresRecentGames,
 }: { 
-    unresTournaments: Promise<Tournament>, 
-    unresParticipants: Promise<TournamentParticipant[]> 
-	unresRecentGames: Promise<Game[]>
+    unresTournaments: Promise<import("@/app/lib/types").TournamentInfo["tournament"]>,
+    unresParticipants: Promise<import("@/app/lib/types").TournamentInfo["participants"]>,
+    unresRecentGames: Promise<import("@/app/lib/types").TournamentInfo["recentGames"]>,
 }) {
 
     const tournament = use(unresTournaments);
@@ -69,10 +69,10 @@ export default function TournamentInfoBody(
 											</div>
 
 											<div>
-												<h3 className="font-semibold">{participant.strategyName}</h3>
-												<p className="text-sm text-gray-600">von {participant.userName}</p>
-												{participant.strategyDescription && (
-                                                    <p className="text-xs text-gray-500 mt-1">{participant.strategyDescription}</p>
+												<h3 className="font-semibold">{participant.strategy.name}</h3>
+												<p className="text-sm text-gray-600">von {participant.user.name}</p>
+												{participant.strategy.description && (
+                                                    <p className="text-xs text-gray-500 mt-1">{participant.strategy.description}</p>
 												)}
 											</div>
 										</div>
@@ -117,9 +117,9 @@ export default function TournamentInfoBody(
 										<div className="flex items-center gap-4">
 											<div className="text-sm text-gray-600">{formatDate(game.createdAt)}</div>
 											<div className="flex items-center gap-2">
-												<span className="font-medium">{game.strategy1Name}</span>
+												<span className="font-medium">{game.strategy1.name}</span>
 												<span className="text-gray-400">vs</span>
-												<span className="font-medium">{game.strategy2Name}</span>
+												<span className="font-medium">{game.strategy2.name}</span>
 											</div>
 										</div>
 
@@ -136,8 +136,8 @@ export default function TournamentInfoBody(
 													{game.winner === "draw"
 														? "Unentschieden"
 														: game.winner === "strategy1"
-                                                        ? game.strategy1Name
-                                                        : game.strategy2Name}
+                                                        ? game.strategy1.name
+                                                        : game.strategy2.name}
 												</Chip>
 											)}
 										</div>

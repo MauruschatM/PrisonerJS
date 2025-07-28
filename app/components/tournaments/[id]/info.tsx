@@ -8,8 +8,8 @@ export default function TournamentInfo({
     unresTournament, 
     unresParticipants 
 } : { 
-    unresTournament: Promise<Tournament> 
-    unresParticipants: Promise<TournamentParticipant[]>
+    unresTournament: Promise<import("@/app/lib/types").TournamentInfo["tournament"]>
+    unresParticipants: Promise<import("@/app/lib/types").TournamentInfo["participants"]>
 }) {
 
     const tournament = use(unresTournament);

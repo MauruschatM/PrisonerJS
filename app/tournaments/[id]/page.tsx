@@ -7,7 +7,7 @@ import Link from "next/link";
 import StatusChip from "@/app/components/tournaments/statusChip";
 import TournamentInfo from "@/app/components/tournaments/[id]/info";
 import TournamentInfoBody from "@/app/components/tournaments/[id]/body";
-import { fetchTournamentFromId, fetchTournamentGames, fetchTournamentParticipants } from "@/server/lib/data";
+import { fetchTournamentInfo } from "@/server/lib/data";
 
 
 export default function TournamentDetailPage({
@@ -17,52 +17,7 @@ export default function TournamentDetailPage({
   }) {
 	const tournamentId = use(params).id as string;
 
-	const recentGames = fetchTournamentGames(tournamentId);
-	const tournament = fetchTournamentFromId(tournamentId);
-	const participants = fetchTournamentParticipants(tournamentId);
-
-	// const [tournament, setTournament] = useState<Tournament | null>(null);
-	// const [participants, setParticipants] = useState<Participant[]>([]);
-	// const [recentGames, setRecentGames] = useState<Game[]>([]);
-
-	
-
-	// const tournament = data.tournament;
-	// const participants = data.participants;
-	// const recentGames = data.recentGames;
-	// useEffect(() => {
-	// 	if (tournamentId) {
-	// 		fetchTournamentDetails();
-
-	// 		// Poll for updates if tournament is running
-	// 		const interval = setInterval(() => {
-	// 			if (tournament?.status === "running") {
-	// 				fetchTournamentDetails();
-	// 			}
-	// 		}, 5000);
-
-	// 		return () => clearInterval(interval);
-	// 	}
-	// }, [tournamentId, tournament?.status]);
-
-	// const fetchTournamentDetails = async () => {
-	// 	try {
-	// 		const response = await fetch(`/api/tournaments/${tournamentId}`);
-	// 		if (response.ok) {
-	// 			const data = await response.json();
-	// 			setTournament(data.tournament);
-	// 			setParticipants(data.participants);
-	// 			setRecentGames(data.recentGames);
-	// 		} else {
-	// 			setError("Tournament nicht gefunden");
-	// 		}
-	// 	} catch (error) {
-	// 		console.error("Error fetching tournament details:", error);
-	// 		setError("Fehler beim Laden der Tournament-Details");
-	// 	} finally {
-	// 		setLoading(false);
-	// 	}
-	// };
+	const tournamentInfo = fetchTournamentInfo(tournamentId);
 
 	return (
 		<div className="container mx-auto p-6 max-w-6xl">
@@ -81,7 +36,7 @@ export default function TournamentDetailPage({
 							</Chip>						
 						}
 					>
-						<StatusChip tournament={tournament}/>
+						<StatusChip tournament={tournamentInfo.then(t => t.tournament)}/>
 					</Suspense>
 				</div>
 
@@ -95,7 +50,10 @@ export default function TournamentDetailPage({
 						</CardBody>
 					</Card>
 				}>
-					<TournamentInfo unresTournament={tournament} unresParticipants={participants} />	
+					<TournamentInfo 
+						unresTournament={tournamentInfo.then(t => t.tournament)} 
+						unresParticipants={tournamentInfo.then(t => t.participants)} 
+					/> 	
 				</Suspense>
 			</div>
 			
@@ -103,9 +61,9 @@ export default function TournamentDetailPage({
 				<h1>Loading...</h1>
 			}>
 				<TournamentInfoBody 
-					unresParticipants={participants} 
-					unresTournaments={tournament}
-					unresRecentGames={recentGames} 
+					unresParticipants={tournamentInfo.then(t => t.participants)} 
+					unresTournaments={tournamentInfo.then(t => t.tournament)}
+					unresRecentGames={tournamentInfo.then(t => t.recentGames)} 
 				/>
 			</Suspense>
 			
