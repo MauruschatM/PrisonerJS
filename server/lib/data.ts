@@ -108,7 +108,7 @@ export async function fetchUsersTournamentStrategy(tournamentId: string): Promis
             return { id: "-1", name: "No strategies found"};
         }
         if (response.length !== 1) {
-            throw new Error("Mehr als eine Strategie gefunden :/ Diese FUnktion wurde nicht dafür ausgelegt");
+            throw new Error("Mehr als eine Strategie gefunden :/ Diese FUnktion wurde nicht dafür ausgelegt" + response);
         }
         return response[0];
     } catch (error) {

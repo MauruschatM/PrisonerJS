@@ -1,9 +1,10 @@
 "use client";
 import { Game, Tournament, TournamentParticipant } from "@/app/lib/types"
-import { use } from "react";
+import { Suspense, use } from "react";
 import { formatDate, formatScore } from "@/shared/utils";
 import { Card, CardBody } from "@heroui/card";
 import { Chip } from "@heroui/chip";
+import Participation from "../participation/participation";
 
 
 export default function TournamentInfoBody(
@@ -38,7 +39,8 @@ export default function TournamentInfoBody(
     return (
 		//TODO exchange participants.length mit state = waiting :)
         <>
-        {/* Rankings */}
+        {/* Rankings */}	
+
 			{participants.length !== 0 && (
 				<section className="mb-8">
 					<h2 className="text-2xl font-semibold mb-4">Rangliste</h2>

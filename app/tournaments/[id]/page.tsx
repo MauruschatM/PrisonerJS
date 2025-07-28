@@ -9,6 +9,7 @@ import TournamentInfo from "@/app/components/tournaments/[id]/info";
 import TournamentInfoBody from "@/app/components/tournaments/[id]/body";
 import { fetchTournamentInfo } from "@/server/lib/data";
 import Participation from "@/app/components/tournaments/participation/participation";
+import RunTournamentButton from "@/app/components/tournaments/[id]/runButton";
 
 
 export default function TournamentDetailPage({
@@ -19,6 +20,7 @@ export default function TournamentDetailPage({
 	const tournamentId: string = use(params).id as string;
 
 	const tournamentInfo = fetchTournamentInfo(tournamentId);
+
 
 	return (
 		<div className="container mx-auto p-6 max-w-6xl">
@@ -39,6 +41,13 @@ export default function TournamentDetailPage({
 					>
 						<StatusChip status={tournamentInfo.then(t => t.tournament.status)}/>
 					</Suspense>
+					<Suspense fallback={null}>
+						<RunTournamentButton 
+							created_by={tournamentInfo.then(t => t.tournament.created_by)}
+							tournamentId={Promise.resolve(tournamentId)}
+							tournamentStatus={tournamentInfo.then(t => t.tournament.status)}
+						/>
+					</Suspense>
 				</div>
 						
 				<Suspense fallback={
@@ -58,6 +67,16 @@ export default function TournamentDetailPage({
 				</Suspense>
 			</div>
 			
+			<div className="pb-8">
+				<Suspense fallback={
+					<h1>Loading...</h1>
+				}>
+					{use(tournamentInfo).tournament.status === "pending" &&
+						<Participation tournamentId={tournamentId} />
+					}
+				</Suspense>
+			</div>
+
 			<Suspense fallback={
 				<h1>Loading...</h1>
 			}>
@@ -66,12 +85,6 @@ export default function TournamentDetailPage({
 					unresTournaments={tournamentInfo.then(t => t.tournament)}
 					unresRecentGames={tournamentInfo.then(t => t.recentGames)} 
 				/>
-			</Suspense>
-			<Suspense fallback={
-				<h1>Loading...</h1>
-			}>
-				<Participation 
-					tournamentId={tournamentId} />
 			</Suspense>
 			
 		</div>
