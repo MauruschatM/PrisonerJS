@@ -4,27 +4,12 @@ import { use } from "react";
 import { formatDate, formatScore } from "@/shared/utils";
 import { Progress } from "@heroui/progress";
 
-
-interface Participant {
-	id: string;
-	totalScore: number;
-	wins: number;
-	losses: number;
-	draws: number;
-	averageScore: number;
-	rank: number;
-	strategyName: string;
-	strategyDescription: string | null;
-	userName: string;
-	userId: string;
-}
-
 export default function TournamentInfo({
     unresTournament, 
     unresParticipants 
 } : { 
     unresTournament: Promise<Tournament> 
-    unresParticipants: Promise<Participant[]>
+    unresParticipants: Promise<TournamentParticipant[]>
 }) {
 
     const tournament = use(unresTournament);

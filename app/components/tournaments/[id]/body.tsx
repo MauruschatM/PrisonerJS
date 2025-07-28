@@ -1,36 +1,25 @@
 "use client";
-import { Tournament, TournamentParticipant } from "@/app/lib/types"
+import { Game, Tournament, TournamentParticipant } from "@/app/lib/types"
 import { use } from "react";
 import { formatDate, formatScore } from "@/shared/utils";
 import { Card, CardBody } from "@heroui/card";
 import { Chip } from "@heroui/chip";
 
 
-interface Participant {
-	id: string;
-	totalScore: number;
-	wins: number;
-	losses: number;
-	draws: number;
-	averageScore: number;
-	rank: number;
-	strategyName: string;
-	strategyDescription: string | null;
-	userName: string;
-	userId: string;
-}
-
-export default function tournamentInfoBody(
+export default function TournamentInfoBody(
 {     
     unresTournaments, 
-    unresParticipants 
+    unresParticipants,
+	unresRecentGames,
 }: { 
     unresTournaments: Promise<Tournament>, 
-    unresParticipants: Promise<Participant[]> 
+    unresParticipants: Promise<TournamentParticipant[]> 
+	unresRecentGames: Promise<Game[]>
 }) {
 
     const tournament = use(unresTournaments);
     const participants = use(unresParticipants);
+	const recentGames = use(unresRecentGames);
 
     const getRankingColor = (rank: number) => {
 		if (rank === 1) return "warning"; // Gold

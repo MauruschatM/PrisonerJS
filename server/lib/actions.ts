@@ -168,6 +168,6 @@ export async function updateUsersParticipatingStrategy(strategyId: string, tourn
 
     } catch (error) {
         console.error("Error fetching strategies:", error);
-        throw new Error("Failed to fetch strategies");
+        throw new Error("Failed to fetch strategies" + error);
     }
 }

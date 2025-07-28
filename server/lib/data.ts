@@ -1,8 +1,8 @@
 "use server";
 import db from "@/server/lib/db";
-import { tournaments, strategies, tournamentParticipants } from "@/server/lib/db/schema";
+import { tournaments, strategies, tournamentParticipants, users, games } from "@/server/lib/db/schema";
 import { and, desc, eq, or } from "drizzle-orm";
-import { Tournament } from "@/app/lib/types";
+import { Game, Tournament, TournamentParticipant } from "@/app/lib/types";
 import { auth } from "../auth/config";
 import { headers } from "next/headers";
 import { create } from "domain";
@@ -108,6 +108,64 @@ export async function fetchUsersParticipatingStrategy(tournamentId: string): Pro
         return response;
     } catch (error) {
         console.error('Database Error:', error);
-        throw new Error('Failed to fetch participating strategies.');
+        throw new Error("Tournament: " + tournamentId + " Failed to fetch participating strategies.");
+    }
+}
+
+
+export async function fetchTournamentFromId(tournamentId: string) : Promise<Tournament> {
+    try{
+
+        const tournamentData = await db
+        .select()
+        .from(tournaments)
+        .where(eq(tournaments.id, tournamentId))
+        .limit(1);
+        
+        if (tournamentData.length === 0) {
+            throw new Error("No Tournament Found");
+        }
+
+        return tournamentData[0];
+    } catch(error) {
+        console.error("Error fetching Tournament Data", error);
+        throw new Error("Tournament: " + tournamentId + " Error fetching Tournament Data " + error)
+    }
+}
+
+export async function fetchTournamentParticipants(tournamentId: string) : Promise<TournamentParticipant[]> {
+    try {
+        const participants = await db
+			.select()
+			.from(tournamentParticipants)
+			.innerJoin(strategies, eq(tournamentParticipants.strategyId, strategies.id))
+			.innerJoin(users, eq(tournamentParticipants.userId, users.id))
+			.where(eq(tournamentParticipants.tournamentId, tournamentId))
+			.orderBy(tournamentParticipants.rank);
+        
+        return participants.map((p: any) => p.tournament_participant);
+
+    } catch(error) {
+        console.error("Error fetching Tournament Participants");
+        throw new Error("Error fetching Tournament Participants TournamentId: " + tournamentId);
+    }
+}
+
+export async function fetchTournamentGames(tournamentId: string) : Promise<Game[]> {
+    try {
+
+        
+        // Get recent games
+        const gamesData = await db
+        .select()
+        .from(games)
+        .innerJoin(strategies, eq(games.strategy1Id, strategies.id))
+        .where(eq(games.tournamentId, tournamentId))
+        .orderBy(desc(games.createdAt))
+        .limit(10);
+        
+        return gamesData.map((p: any) => p.games);
+    } catch(error) {
+        throw new Error("Tournament: " + tournamentId + " Error fetching Tournament Games" + error)
     }
 }
