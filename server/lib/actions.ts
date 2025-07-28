@@ -129,8 +129,18 @@ export async function startTournament(tournamentId: string) {
     }
 }
 
-export async function updateUsersParticipatingStrategy(strategyId: string, tournamentId: string) {
-    try {
+export async function updateUsersParticipatingStrategy(tournamentId: string, strategyId: string) {
+    'use server'
+    console.log("Updating user part strat");    
+    console.log(tournamentId, strategyId);
+    // try {
+        // Ensure parameters are strings
+        const tournamentIdStr = String(tournamentId);
+        const strategyIdStr = String(strategyId);
+        
+        if (!tournamentIdStr) throw new Error("Missing tournamentId");
+        if (!strategyIdStr) throw new Error("Missing strategyId");
+        
         const session = await auth.api.getSession({
             headers: await headers(),
         });
@@ -156,18 +166,42 @@ export async function updateUsersParticipatingStrategy(strategyId: string, tourn
             throw new Error("Strategy not found or does not belong to user");
         }
 
-        await db
-            .update(tournamentParticipants)
-            .set({ strategyId: strategyId })
+        // Prüfen, ob der Teilnehmer schon existiert
+        const existingParticipant = await db
+            .select()
+            .from(tournamentParticipants)
             .where(
                 and(
                     eq(tournamentParticipants.userId, userId),
                     eq(tournamentParticipants.tournamentId, tournamentId)
                 )
-            );
+            )
+            .limit(1);
 
-    } catch (error) {
-        console.error("Error fetching strategies:", error);
-        throw new Error("Failed to fetch strategies" + error);
-    }
+        if (existingParticipant.length === 0) {
+            // Insert, falls noch nicht vorhanden
+            await db.insert(tournamentParticipants).values({
+                id: Math.random().toString(36).substring(2) + Date.now().toString(36),
+                userId,
+                tournamentId,
+                strategyId,
+                createdAt: new Date(),
+            });
+        } else {
+            // Update, falls vorhanden
+            await db
+                .update(tournamentParticipants)
+                .set({ strategyId: strategyId })
+                .where(
+                    and(
+                        eq(tournamentParticipants.userId, userId),
+                        eq(tournamentParticipants.tournamentId, tournamentId)
+                    )
+                );
+        }
+        revalidatePath('/tournaments/' + tournamentId);
+    // } catch (error) {
+    //     console.error("Error updating strategy:", error);
+    //     throw new Error("Failed to update strategy: " + error);
+    // }
 }

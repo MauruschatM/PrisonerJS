@@ -64,7 +64,7 @@ export async function fetchUpcomingTournaments(): Promise<Tournament[]> {
 export async function fetchStrategyNameAndIdList(): Promise<{ name: string, id: string }[]> {
     //TODO: Remove!
     // artificially delay to simulate loading
-    await new Promise(resolve => setTimeout(resolve, 5000));
+    //await new Promise(resolve => setTimeout(resolve, 5000));
     try {
         const session = await auth.api.getSession({
             headers: await headers(),
@@ -84,7 +84,7 @@ export async function fetchStrategyNameAndIdList(): Promise<{ name: string, id: 
 }
 
 
-export async function fetchUsersParticipatingStrategy(tournamentId: string): Promise<{ name: string, id: string }[]> {
+export async function fetchUsersTournamentStrategy(tournamentId: string): Promise<{ name: string, id: string }[]> {
     try {
         const session = await auth.api.getSession({
             headers: await headers(),

@@ -38,20 +38,9 @@ export default function TournamentInfoBody(
     return (
         <>
         {/* Rankings */}
-			<section className="mb-8">
-				<h2 className="text-2xl font-semibold mb-4">Rangliste</h2>
-
-				{participants.length === 0 ? (
-                    <Card>
-						<CardBody>
-							<p className="text-center text-gray-600">
-								{tournament.status === "pending"
-									? "Tournament wurde noch nicht gestartet"
-									: "Keine Teilnehmer gefunden"}
-							</p>
-						</CardBody>
-					</Card>
-				) : (
+			{participants.length !== 0 && (
+				<section className="mb-8">
+					<h2 className="text-2xl font-semibold mb-4">Rangliste</h2>
                     <div className="space-y-3">
 						{participants.map((participant, index) => (
                             <Card key={participant.id}>
@@ -101,8 +90,8 @@ export default function TournamentInfoBody(
 							</Card>
 						))}
 					</div>
-				)}
-			</section>
+				</section>
+			)}
 
 			{/* Recent Games */}
 			{recentGames.length > 0 && (

@@ -8,6 +8,7 @@ import StatusChip from "@/app/components/tournaments/statusChip";
 import TournamentInfo from "@/app/components/tournaments/[id]/info";
 import TournamentInfoBody from "@/app/components/tournaments/[id]/body";
 import { fetchTournamentInfo } from "@/server/lib/data";
+import Participation from "@/app/components/tournaments/participation/participation";
 
 
 export default function TournamentDetailPage({
@@ -65,6 +66,12 @@ export default function TournamentDetailPage({
 					unresTournaments={tournamentInfo.then(t => t.tournament)}
 					unresRecentGames={tournamentInfo.then(t => t.recentGames)} 
 				/>
+			</Suspense>
+			<Suspense fallback={
+				<h1>Loading...</h1>
+			}>
+				<Participation 
+					tournamentId={tournamentId} />
 			</Suspense>
 			
 		</div>

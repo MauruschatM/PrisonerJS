@@ -1,15 +1,18 @@
 "use server";
-import { fetchStrategyNameAndIdList, fetchUsersParticipatingStrategy } from "@/server/lib/data";
-import { Select, SelectSection, SelectItem } from "@heroui/select";
+import { fetchStrategyNameAndIdList, fetchUsersTournamentStrategy } from "@/server/lib/data";
 import StrategySelection from "./selection";
 import { Suspense } from "react";
 import SelectionSkeleton from "./selectionSkeleton";
-import { string } from "better-auth/*";
 
-export default async function Participation() {
+// type ParticipationProps {
+//     tournamentId : string;
+// }
+
+export default async function Participation(tournamentId: string | { tournamentId: string }) {
     //TODO: Only active strategies?
+    const actualTournamentId = typeof tournamentId === 'string' ? tournamentId : tournamentId.tournamentId;
     const strategyList = fetchStrategyNameAndIdList();
-    //const initialSelectedStrategy = fetchUsersParticipatingStrategy();
+    const initialSelectedStrategy = fetchUsersTournamentStrategy(actualTournamentId);
     
     return (
         <Suspense fallback={
@@ -17,7 +20,11 @@ export default async function Participation() {
                 <SelectionSkeleton />
             </div>
         }>
-            <StrategySelection strategyList={strategyList} initialSelectedStrategy={initialSelectedStrategy} />
+            <StrategySelection 
+                strategyList={strategyList} 
+                initialSelectedStrategy={initialSelectedStrategy} 
+                tournamentId={actualTournamentId}
+            />
         </Suspense>
     );
 }
