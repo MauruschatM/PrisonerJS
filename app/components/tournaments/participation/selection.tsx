@@ -20,22 +20,20 @@ export default function StrategySelection({
     tournamentId: string
 }) {
     const allStrategies = use(strategyList);
-    const initialSelectedS = use(initialSelectedStrategy);
-    const [selectedStrategy, setSelectedStrategy] = useState(
-      initialSelectedS.length > 0 ? initialSelectedS[0].id : undefined
-    );
+    // const initialSelectedS = use(initialSelectedStrategy);
+    // const [selectedStrategy, setSelectedStrategy] = useState(
+    //   initialSelectedS.length > 0 ? initialSelectedS[0].id : undefined
+    // );
 
     function handleSelectionChange(keys: SharedSelection) {
         const key = keys.currentKey;
         if (!key) return;
-        
         updateUsersParticipatingStrategy(tournamentId, key);
     }
 
     return (
         <div>
             <Select
-
                 className="max-w-xs"
                 items={allStrategies}
                 label="Participating with strategy"

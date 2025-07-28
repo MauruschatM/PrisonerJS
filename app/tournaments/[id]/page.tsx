@@ -16,7 +16,7 @@ export default function TournamentDetailPage({
   }: {
 	params: Promise<{ id: string }>
   }) {
-	const tournamentId = use(params).id as string;
+	const tournamentId: string = use(params).id as string;
 
 	const tournamentInfo = fetchTournamentInfo(tournamentId);
 
@@ -37,10 +37,10 @@ export default function TournamentDetailPage({
 							</Chip>						
 						}
 					>
-						<StatusChip tournament={tournamentInfo.then(t => t.tournament)}/>
+						<StatusChip status={tournamentInfo.then(t => t.tournament.status)}/>
 					</Suspense>
 				</div>
-
+						
 				<Suspense fallback={
 					<Card className="animate-pulse">
 						<CardHeader>
