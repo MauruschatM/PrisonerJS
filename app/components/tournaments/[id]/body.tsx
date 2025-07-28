@@ -36,6 +36,7 @@ export default function TournamentInfoBody(
 	};
 
     return (
+		//TODO exchange participants.length mit state = waiting :)
         <>
         {/* Rankings */}
 			{participants.length !== 0 && (
