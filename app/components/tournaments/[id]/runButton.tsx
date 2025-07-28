@@ -1,6 +1,6 @@
 "use client";
 
-import { runTournament } from "@/server/lib/tournament-engine";
+import { runTournamentWithParticipants } from "@/server/lib/actions";
 import { Button } from "@heroui/button";
 import { use, useState } from "react";
 import { startTournament } from "@/server/lib/actions";
@@ -29,7 +29,7 @@ export default function RunTournamentButton({
             // First validate the tournament can be started
             await startTournament(id);
             // Then run the tournament
-            await runTournament(id);
+            await runTournamentWithParticipants(id);
             // Optionally refresh the page or show success message
             window.location.reload();
         } catch (error) {
